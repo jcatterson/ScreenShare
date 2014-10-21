@@ -4,6 +4,7 @@
 import java.net.*;
 import java.io.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.util.*;
 
 public class DisplayServer extends Thread
@@ -98,7 +99,17 @@ public class DisplayServer extends Thread
 				try {
 					System.gc();
 					img = r.createScreenCapture(rect);
-					icon = new javax.swing.ImageIcon(img);
+					int width = (int)(img.getWidth()*.6);
+					int height = (int)(img.getHeight()*.6);
+					java.awt.image.BufferedImage scaled = new java.awt.image.BufferedImage(width, height, img.getType()); 
+					Graphics2D graphics2D = scaled.createGraphics();
+					AffineTransform xform = AffineTransform.getScaleInstance(.6, .6);
+					graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+						RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+					graphics2D.drawImage(img, xform, null);
+					graphics2D.dispose();
+
+					icon = new javax.swing.ImageIcon(scaled);
 					os.writeObject(icon);
 					os.flush();
 					icon = null;
