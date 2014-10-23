@@ -1,0 +1,36 @@
+<html>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+    <body>
+    	<div>
+    		Hello World
+    	</div>
+
+        <img id="test"></img>
+        
+	    <script>
+    	var $j = jQuery.noConflict();
+    	var blob;
+    	$j(function(){
+	    var ws = new WebSocket("ws://127.0.0.1:3000/");
+			
+            ws.onmessage = function (evt) {
+                //blob = btoa( evt.data );
+                //console.log( blob );
+                var img = $j('#test')[0];//new Image();
+                img.src = "data:img/png;base64," +evt.data;
+
+            };
+
+            ws.onclose = function() {
+                alert("Closed!");
+            };
+
+            ws.onerror = function(err) {
+                alert("Error: " + err);
+            };
+        
+        });
+    </script>
+
+    </body>
+</html>

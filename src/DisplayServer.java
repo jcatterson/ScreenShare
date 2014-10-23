@@ -5,6 +5,7 @@ import java.net.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.util.*;
 
 public class DisplayServer extends Thread
@@ -81,6 +82,15 @@ public class DisplayServer extends Thread
 				ex.printStackTrace();
 			}
 		}
+		
+		private byte[] serializeImageIcon( javax.swing.ImageIcon icon ) throws IOException {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(bos);
+			out.writeObject(icon);
+			out.close();
+			
+			return bos.toByteArray();
+		}
 
 		public void run() {
 			java.awt.image.BufferedImage img = null;
@@ -108,8 +118,11 @@ public class DisplayServer extends Thread
 						RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 					graphics2D.drawImage(img, xform, null);
 					graphics2D.dispose();
-
+					System.out.println("what is the type");
+					System.out.println(scaled.getType() + "" );
+					System.out.println( BufferedImage.TYPE_INT_RGB + "");
 					icon = new javax.swing.ImageIcon(scaled);
+					
 					os.writeObject(icon);
 					os.flush();
 					icon = null;

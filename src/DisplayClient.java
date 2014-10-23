@@ -17,7 +17,7 @@ public class DisplayClient extends Thread implements KeyListener, MouseListener
 
 	public DisplayClient() {
 		try {
-			add = JOptionPane.showInputDialog(null,"Server Address","192.168.2.8");
+			add = JOptionPane.showInputDialog(null,"Server Address","127.0.0.1");
 			s = new Socket(add, 2020);
 			s.getOutputStream();
 			ois = new ObjectInputStream(s.getInputStream());
@@ -89,7 +89,7 @@ public class DisplayClient extends Thread implements KeyListener, MouseListener
 				icon = (ImageIcon)ois.readObject();
 				if(d == null || icon == null) continue;
 				if(d.width>0 && d.height>0 && (d.width != icon.getIconWidth() || d.height != icon.getIconHeight())) 
-					icon.setImage(icon.getImage());//.getScaledInstance(d.width, d.height, i.SCALE_FAST));
+					icon.setImage(icon.getImage().getScaledInstance(d.width, d.height, i.SCALE_FAST));
 				l.setIcon(icon);
 				l.validate();
 				fr.validate();
