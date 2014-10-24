@@ -44,7 +44,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 				ex.printStackTrace();
 			}
 			Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-			Rectangle rect = new Rectangle(0,0,size.width/2, size.height/2);
+			Rectangle rect = new Rectangle(0,0,size.width, size.height);
 			System.gc();
 			return r.createScreenCapture(rect);
     	}
@@ -62,13 +62,30 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
         @OnWebSocketConnect
         public void onConnect(Session session) {
             System.out.println("Connect: " + session.getRemoteAddress().getAddress());
-            try {
-            	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            	ImageIO.write(myImage(), "png", outputStream);
-            	String base2 = Base64.encodeBase64String( outputStream.toByteArray() );
-            	session.getRemote().sendString( base2 );
-            } catch (IOException e) {
-                e.printStackTrace();
+            while( true ) {
+	            try {
+	            	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	            	BufferedImage img = myImage();
+					int width = (int)(img.getWidth()*.6);
+					int height = (int)(img.getHeight()*.6);
+					java.awt.image.BufferedImage scaled = new java.awt.image.BufferedImage(width/3, height/3, img.getType()); 
+					Graphics2D graphics2D = scaled.createGraphics();
+					AffineTransform xform = AffineTransform.getScaleInstance(.6, .6);
+					graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+						RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+					graphics2D.drawImage(img, xform, null);
+					graphics2D.dispose();
+
+	            	ImageIO.write(scaled, "png", outputStream);
+	            	String base2 = Base64.encodeBase64String( outputStream.toByteArray() );
+	            	session.getRemote().sendString( base2 );
+					Thread.sleep(120);
+	            }
+	            catch (Exception e)
+	            {
+	                e.printStackTrace();
+	            }
+	            
             }
         }
 
